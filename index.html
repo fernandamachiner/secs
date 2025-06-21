@@ -1,866 +1,361 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PICAPS - Governança Territorial Colaborativa</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: PICAPS Branding (Azuis, Verde, Cinzas) -->
+    <!-- Application Structure Plan: A single-page application with a top navigation bar for smooth scrolling. The structure is thematic, not linear, starting with a Hero section (Início) to introduce the project, followed by sections for the problem/justification (O Projeto), an interactive tabbed view of the four core Strategic Objectives, a visual representation of the Governance Structure, and a final section on Impact with a dynamic chart for key indicators. This dashboard-like, thematic approach was chosen to break down the dense report into digestible, user-friendly segments, allowing users to explore the project's 'why', 'what', 'how', and 'so what' in a non-linear, engaging way, which is more effective for web consumption than a simple document scroll. -->
+    <!-- Visualization & Content Choices: 
+        - Hero Section (Início): Goal: Inform/Orient. Method: Large headings, logos, and a concise summary. Justification: Provides immediate context and brand recognition.
+        - The Project (Diagnóstico/Justificativa): Goal: Inform/Explain. Method: Cards for key concepts ("Territórios Saudáveis", "Inteligência Cooperativa"). Justification: Breaks down foundational theories into easy-to-grasp blocks.
+        - Strategic Objectives: Goal: Organize/Explore. Method: Interactive tab system with icons (HTML/CSS/JS). Each tab reveals details of one of the 4 objectives. Justification: Transforms a long list into an engaging, interactive element that encourages user exploration and simplifies the project's core cycle.
+        - Governance Structure: Goal: Organize/Clarify. Method: Diagram built with HTML/Tailwind CSS. Justification: Visually represents the complex relationships between committees and partners more effectively than text alone.
+        - Impact & Monitoring: Goal: Compare/Inform. Method: Interactive bar chart (Chart.js) for process/result/impact indicators and an iconic list for expected impacts. Justification: Visualizes quantitative outcomes and summarizes qualitative impacts for quick comprehension. Chart.js was chosen for its responsiveness and interactivity.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Lato', sans-serif;
+        }
+        h1, h2, h3, h4, .font-montserrat {
+            font-family: 'Montserrat', sans-serif;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 400px;
+            max-height: 50vh;
+        }
+        .nav-link-active {
+            color: #0d9488;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
 
-```jsx
-import React, { useState, useEffect } from 'react';
-
-const App = () => {
-  // State for tracking current screen
-  const [currentScreen, setCurrentScreen] = useState('home');
-  
-  // State for user authentication
-  const [user, setUser] = useState(null);
-  
-  // Mock data for coworking spaces
-  const [spaces, setSpaces] = useState([
-    {
-      id: 1,
-      name: 'TechHub',
-      description: 'Modern coworking space in the heart of the city',
-      location: 'Downtown',
-      floorPlans: {
-
-        firstFloor: [
-          { id: 'A1', type: 'desk', available: true },
-          { id: 'A2', type: 'desk', available: false },
-          { id: 'A3', type: 'desk', available: true },
-          { id: 'A4', type: 'desk', available: true },
-          { id: 'A5', type: 'desk', available: false },
-          { id: 'B1', type: 'meetingRoom', available: true, capacity: 4 },
-          { id: 'B2', type: 'meetingRoom', available: true, capacity: 6 },
-          { id: 'B3', type: 'privateOffice', available: true, capacity: 2 },
-          { id: 'C1', type: 'desk', available: true },
-          { id: 'C2', type: 'desk', available: false },
-          { id: 'C3', type: 'desk', available: true },
-        ],
-        secondFloor: [
-          { id: 'D1', type: 'desk', available: true },
-          { id: 'D2', type: 'desk', available: true },
-          { id: 'D3', type: 'desk', available: false },
-          { id: 'E1', type: 'meetingRoom', 
-
-available: false, capacity: 4 },
-          { id: 'E2', type: 'privateOffice', available: true, capacity: 4 },
-          { id: 'F1', type: 'desk', available: true },
-          { id: 'F2', type: 'desk', available: true },
-          { id: 'F3', type: 'desk', available: false },
-        ]
-      }
-    },
-    {
-      id: 2,
-      name: 'CreativeNest',
-      description: 'Creative coworking space for designers and artists',
-      location: 'Arts District',
-      floorPlans: {
-        firstFloor: [
-          { id: 'X1', type: 'desk', available: true },
-          { id: 'X2', type: 'desk', available: true },
-          { id: 'X3', type: 'desk', available: false },
-          { id: 'Y1', type: 'creativeStudio', 
-
-available: true, capacity: 2 },
-          { id: 'Y2', type: 'creativeStudio', available: true, capacity: 1 },
-          { id: 'Z1', type: 'desk', available: true },
-          { id: 'Z2', type: 'desk', available: false },
-          { id: 'Z3', type: 'desk', available: true },
-        ]
-      }
-    }
-  ]);
-  
-  // Selected space and floor
-  const [selectedSpace, setSelectedSpace] = useState(null);
-  const [selectedFloor, setSelectedFloor] = useState('firstFloor');
-  const [selectedSeat, setSelectedSeat] = useState(null);
-  
-  // Reservation details
-  const [reservationDate, 
-
-setReservationDate] = useState('');
-  const [reservationTime, setReservationTime] = useState('');
-  
-  // Effect to handle URL hash changes
-  useEffect(() => {
-    const handleHashChange = () => {
-      const hash = window.location.hash.replace('#', '');
-      if (hash) {
-        setCurrentScreen(hash);
-      }
-    };
-    
-    window.addEventListener('hashchange', handleHashChange);
-    handleHashChange(); // Initialize screen based on current hash
-    
-    return () => {
-      
-
-window.removeEventListener('hashchange', handleHashChange);
-    };
-  }, []);
-  
-  // Function to navigate to a screen
-  const navigateTo = (screen) => {
-    window.location.hash = screen;
-  };
-  
-  // Function to handle user registration
-  const handleRegister = (userData) => {
-    setUser(userData);
-    navigateTo('space-selection');
-  };
-  
-  // Function to handle user login
-  const handleLogin = (userData) => {
-    setUser(userData);
-    navigateTo('space-selection');
-  };
-
-  
-  // Function to handle space selection
-  const handleSpaceSelect = (spaceId) => {
-    const space = spaces.find(s => s.id === spaceId);
-    setSelectedSpace(space);
-    navigateTo('floor-plan');
-  };
-  
-  // Function to handle seat selection
-  const handleSeatSelect = (seatId) => {
-    if (selectedSpace) {
-      const seat = selectedSpace.floorPlans[selectedFloor].find(s => s.id === seatId);
-      if (seat && seat.available) {
-        setSelectedSeat(seat);
-        navigateTo('reservation-confirmation');
-      }
-    }
-  };
-
-  
-  // Function to handle reservation submission
-  const handleReservationSubmit = () => {
-    alert(`Reservation confirmed for seat ${selectedSeat.id} on ${reservationDate} at ${reservationTime}`);
-    navigateTo('home');
-  };
-  
-  // Render the appropriate screen based on currentScreen state
-  const renderScreen = () => {
-    switch (currentScreen) {
-      case 'home':
-        return <HomeScreen onNavigate={navigateTo} />;
-      case 'register':
-        return <RegisterScreen onRegister={handleRegister} onNavigate={navigateTo} />;
-
-      case 'login':
-        return <LoginScreen onLogin={handleLogin} onNavigate={navigateTo} />;
-      case 'space-selection':
-        return <SpaceSelectionScreen spaces={spaces} onSelect={handleSpaceSelect} onNavigate={navigateTo} />;
-      case 'floor-plan':
-        return (
-          <FloorPlanScreen 
-            space={selectedSpace} 
-            floor={selectedFloor} 
-            onFloorChange={setSelectedFloor} 
-            onSelectSeat={handleSeatSelect}
-            onNavigate={navigateTo}
-          />
-        );
-      case 'reservation-confirmation':
-        return (
-
-          <ReservationConfirmationScreen 
-            space={selectedSpace} 
-            seat={selectedSeat}
-            date={reservationDate}
-            time={reservationTime}
-            onDateChange={setReservationDate}
-            onTimeChange={setReservationTime}
-            onSubmit={handleReservationSubmit}
-            onNavigate={navigateTo}
-          />
-        );
-      case 'settings':
-        return <SettingsScreen user={user} onNavigate={navigateTo} />;
-      default:
-        return <HomeScreen onNavigate={navigateTo} />;
-    }
-
-  };
-  
-  return (
-    <div className="min-h-screen bg-gray-100">
-      {renderScreen()}
-    </div>
-  );
-};
-
-// Home Screen Component
-const HomeScreen = ({ onNavigate }) => {
-  return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
-      <div className="text-center max-w-xl">
-        <h1 className="text-4xl font-bold text-blue-600 mb-4">WorkHub</h1>
-        <p className="text-lg text-gray-700 mb-8">
-
-          Find and reserve your perfect workspace in our modern coworking environments.
-        </p>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <button
-            onClick={() => onNavigate('login')}
-            className="px-6 py-3 bg-white text-blue-600 font-semibold rounded-lg shadow-md hover:bg-blue-50 transition-colors"
-          >
-            Sign In
-          </button>
-          <button
-            onClick={() => onNavigate('register')}
-            className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-colors"
-          >
-
-            Create Account
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// Register Screen Component
-const RegisterScreen = ({ onRegister, onNavigate }) => {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: ''
-  });
-  
-  const handleChange = (e) => {
-    setFormData({
-
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
-  
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Basic validation
-    if (formData.password !== formData.confirmPassword) {
-      alert("Passwords don't match");
-      return;
-    }
-    
-    const newUser = {
-      name: formData.name,
-      email: formData.email
-    };
-    
-    onRegister(newUser);
-  };
-
-  
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
-      <div className="bg-white rounded-xl shadow-lg p-8 w-full max-w-md">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">Create Your Account</h2>
-        
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-              Full Name
-            </label>
-            <input
-              type="text"
-              id="name"
-
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-            />
-          </div>
-          
-          <div className="mb-4">
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-              Email Address
-            </label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-
-              value={formData.email}
-              onChange={handleChange}
-              required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-            />
-          </div>
-          
-          <div className="mb-4">
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-              Password
-            </label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={formData.password}
-
-              onChange={handleChange}
-              required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-            />
-          </div>
-          
-          <div className="mb-6">
-            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
-              Confirm Password
-            </label>
-            <input
-              type="password"
-              id="confirmPassword"
-              name="confirmPassword"
-              value={formData.confirmPassword}
-
-              onChange={handleChange}
-              required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-            />
-          </div>
-          
-          <button
-            type="submit"
-            className="w-full py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            Create Account
-          </button>
-        </form>
-        
-        <p className="mt-4 text-center text-sm text-gray-600">
-
-          Already have an account?{' '}
-          <button
-            onClick={() => onNavigate('login')}
-            className="text-blue-600 hover:text-blue-800 font-medium"
-          >
-            Sign In
-          </button>
-        </p>
-      </div>
-    </div>
-  );
-};
-
-// Login Screen Component
-const LoginScreen = ({ onLogin, onNavigate }) => {
-  const [formData, setFormData] = useState({
-    email: '',
-    password: ''
-
-  });
-  
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
-  
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const mockUser = {
-      name: 'John Doe',
-      email: formData.email
-    };
-    
-    onLogin(mockUser);
-  };
-  
-  return (
-    <div className="min-h-screen flex 
-
-items-center justify-center bg-gray-100 p-4">
-      <div className="bg-white rounded-xl shadow-lg p-8 w-full max-w-md">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">Welcome Back</h2>
-        
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-              Email Address
-            </label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-
-              required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-            />
-          </div>
-          
-          <div className="mb-6">
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-              Password
-            </label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-            />
-          </div>
-          
-          <button
-            type="submit"
-            className="w-full py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            Sign In
-          </button>
-        </form>
-        
-        <p className="mt-4 text-center text-sm text-gray-600">
-          Don't have an account?{' '}
-          <button
-
-            onClick={() => onNavigate('register')}
-            className="text-blue-600 hover:text-blue-800 font-medium"
-          >
-            Create one
-          </button>
-        </p>
-      </div>
-    </div>
-  );
-};
-
-// Space Selection Screen Component
-const SpaceSelectionScreen = ({ spaces, onSelect, onNavigate }) => {
-  return (
-    <div className="min-h-screen bg-gray-100 py-8 px-4">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
-
-          <h1 className="text-3xl font-bold text-gray-800">Choose Your Workspace</h1>
-          <button
-            onClick={() => onNavigate('home')}
-            className="text-blue-600 hover:text-blue-800 font-medium"
-          >
-            Logout
-          </button>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {spaces.map(space => (
-            <div 
-              key={space.id}
-              className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
-
-              onClick={() => onSelect(space.id)}
-            >
-              <div className="h-48 bg-gray-200 flex items-center justify-center">
-                <svg className="w-20 h-20 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                </svg>
-              </div>
-              <div className="p-6">
-                <h2 className="text-xl font-semibold text-gray-800 mb-2">{space.name}</h2>
-                <p className="text-gray-600 
-
-mb-3">{space.description}</p>
-                <div className="flex items-center text-sm text-gray-500">
-                  <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                  </svg>
-                  {space.location}
+    <header id="header" class="bg-white/80 backdrop-blur-md shadow-md sticky top-0 z-50 transition-all duration-300">
+        <div class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <div class="w-10 h-10 bg-blue-900 rounded-full flex items-center justify-center">
+                   <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center">
+                        <svg class="w-6 h-6 text-blue-900" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                   </div>
                 </div>
-              </div>
+                <h1 class="text-lg md:text-xl font-bold text-blue-900 font-montserrat">PICAPS</h1>
             </div>
-
-          ))}
+            <nav class="hidden md:flex space-x-6 text-gray-600">
+                <a href="#inicio" class="hover:text-teal-600 transition-colors duration-300 nav-link">Início</a>
+                <a href="#projeto" class="hover:text-teal-600 transition-colors duration-300 nav-link">O Projeto</a>
+                <a href="#objetivos" class="hover:text-teal-600 transition-colors duration-300 nav-link">Objetivos</a>
+                <a href="#estrutura" class="hover:text-teal-600 transition-colors duration-300 nav-link">Estrutura</a>
+                <a href="#impacto" class="hover:text-teal-600 transition-colors duration-300 nav-link">Impacto</a>
+            </nav>
+            <button id="mobile-menu-button" class="md:hidden p-2 rounded-md text-gray-600 hover:bg-gray-100">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+            </button>
         </div>
-      </div>
-    </div>
-  );
-};
-
-// Floor Plan Screen Component
-const FloorPlanScreen = ({ space, floor, onFloorChange, onSelectSeat, onNavigate }) => {
-  // Function to get seat color based on availability
-  const getSeatColor = (available) => {
-    if (!available) return 'bg-gray-300';
-    return 'bg-green-500 hover:bg-green-600';
-  };
-  
-  return (
-    <div className="min-h-screen bg-gray-100 py-8 px-4">
-
-      <div className="max-w-6xl mx-auto">
-        <div className="flex justify-between items-center mb-6">
-          <button
-            onClick={() => onNavigate('space-selection')}
-            className="flex items-center text-blue-600 hover:text-blue-800"
-          >
-            <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-            </svg>
-            Back
-          </button>
-          <h1 className="text-2xl font-bold text-gray-800">{space.name} - {floor === 
-
-'firstFloor' ? 'First Floor' : 'Second Floor'}</h1>
-          <button
-            onClick={() => onNavigate('home')}
-            className="text-blue-600 hover:text-blue-800"
-          >
-            Logout
-          </button>
+        <div id="mobile-menu" class="hidden md:hidden bg-white/90 backdrop-blur-md">
+            <a href="#inicio" class="block py-2 px-6 text-gray-600 hover:bg-gray-100">Início</a>
+            <a href="#projeto" class="block py-2 px-6 text-gray-600 hover:bg-gray-100">O Projeto</a>
+            <a href="#objetivos" class="block py-2 px-6 text-gray-600 hover:bg-gray-100">Objetivos</a>
+            <a href="#estrutura" class="block py-2 px-6 text-gray-600 hover:bg-gray-100">Estrutura</a>
+            <a href="#impacto" class="block py-2 px-6 text-gray-600 hover:bg-gray-100">Impacto</a>
         </div>
-        
-        <div className="bg-white rounded-xl shadow-md p-6 mb-6">
-          <div className="flex justify-between items-center mb-4">
-            <div>
-              <h2 className="text-xl font-semibold text-gray-800">{space.name}</h2>
-              <p className="text-gray-600">{space.description}</p>
+    </header>
 
+    <main>
+        <section id="inicio" class="min-h-screen bg-white flex items-center pt-16">
+            <div class="container mx-auto px-6 text-center">
+                <div class="w-20 h-20 mx-auto mb-6 bg-blue-900 rounded-full flex items-center justify-center shadow-lg">
+                   <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center">
+                       <img src="https://i.imgur.com/k9QYgKE.png" alt="Logo PICAPS" class="w-14 h-14 object-contain" onerror="this.style.display='none'">
+                   </div>
+                </div>
+                <h2 class="text-3xl md:text-5xl font-bold text-blue-900 font-montserrat mb-4">Governança Territorial Colaborativa para Territórios Saudáveis, Sustentáveis e Solidários</h2>
+                <p class="text-lg md:text-xl text-gray-600 max-w-4xl mx-auto mb-8">Um projeto para promover o desenvolvimento territorial solidário em Sinop/MT, através de inovações sociotécnicas e parcerias estratégicas para o enfrentamento dos determinantes sociais em saúde.</p>
+                <div class="flex justify-center items-center space-x-6 md:space-x-10 text-gray-500">
+                    <span class="font-semibold">Fiocruz</span>
+                    <span class="font-semibold">UFMT</span>
+                    <span class="font-semibold">UNEMAT</span>
+                </div>
             </div>
-            
-            <div className="flex space-x-2">
-              <button
-                onClick={() => onFloorChange('firstFloor')}
-                className={`px-4 py-2 rounded-lg ${
-                  floor === 'firstFloor'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                }`}
-              >
-                First Floor
-              </button>
-              <button
-                onClick={() => onFloorChange('secondFloor')}
-                className={`px-4 py-2 rounded-lg ${
+        </section>
 
-                  floor === 'secondFloor'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                }`}
-                disabled={!space.floorPlans.secondFloor}
-              >
-                Second Floor
-              </button>
-            </div>
-          </div>
-          
-          <div className="relative bg-gray-200 rounded-lg p-8 min-h-[400px]">
-            <div className="absolute top-4 right-4 flex items-center bg-white px-3 py-1 rounded-full shadow-sm">
-              <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
-              <span className="text-sm text-
-
-gray-700">Available</span>
-              <div className="w-3 h-3 bg-gray-300 rounded-full ml-4 mr-2"></div>
-              <span className="text-sm text-gray-700">Occupied</span>
-            </div>
-            
-            <div className="grid grid-cols-4 gap-4">
-              {space.floorPlans[floor].map((seat) => (
-                <div 
-                  key={seat.id}
-                  className={`flex flex-col items-center justify-center p-2 rounded-lg cursor-pointer transition-all ${getSeatColor(seat.available)}`}
-                  onClick={() => onSelectSeat(seat.id)}
-                >
-                  <div className="text-white font-
-
-bold mb-1">{seat.id}</div>
-                  <div className="text-xs text-white">
-                    {seat.type === 'desk' ? 'Desk' : 
-                     seat.type === 'meetingRoom' ? 'Meeting Room' : 
-                     seat.type === 'privateOffice' ? 'Private Office' : 'Creative Studio'}
-                  </div>
-                  {seat.capacity && (
-                    <div className="text-xs text-white mt-1">
-                      Capacity: {seat.capacity}
+        <section id="projeto" class="py-16 md:py-24">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-blue-900 font-montserrat mb-3">Diagnóstico e Justificativa</h2>
+                    <p class="text-lg text-gray-600 max-w-3xl mx-auto">Esta seção detalha o contexto e a necessidade do projeto, explicando por que uma abordagem colaborativa e intersetorial é fundamental para a saúde pública em territórios complexos como a Amazônia Legal.</p>
+                </div>
+                <div class="grid md:grid-cols-2 gap-8 items-start">
+                    <div class="bg-white p-8 rounded-lg shadow-lg">
+                        <h3 class="text-xl font-bold text-teal-700 font-montserrat mb-4">O Desafio em Sinop/MT</h3>
+                        <p class="text-gray-700 leading-relaxed">A complexidade dos problemas de saúde pública exige abordagens que transcendam a lógica setorial e fragmentada. Territórios em intensa expansão agrícola, como Sinop, enfrentam pressões combinadas de um crescimento econômico acelerado, profundas vulnerabilidades sociais e crescente degradação ambiental. Os problemas de saúde emergem como reflexos de um modelo de desenvolvimento que gera externalidades negativas, exigindo uma nova abordagem.</p>
                     </div>
-                  )}
+                    <div class="bg-white p-8 rounded-lg shadow-lg">
+                         <h3 class="text-xl font-bold text-teal-700 font-montserrat mb-4">A Nossa Abordagem</h3>
+                        <p class="text-gray-700 leading-relaxed mb-4">A proposta baseia-se em dois conceitos-chave: o paradigma dos **Territórios Saudáveis, Sustentáveis e Solidários**, que reconhece a saúde como um produto social, e a **Inteligência Cooperativa**, que promove a construção coletiva de soluções a partir da interação entre diversos atores (públicos, privados e sociedade civil).</p>
+                        <p class="text-gray-700 leading-relaxed">Essa aliança estratégica entre Fiocruz, UFMT e UNEMAT visa institucionalizar uma plataforma colaborativa de longo prazo para estimular a produção de conhecimento engajado e a transformação social local.</p>
+                    </div>
                 </div>
-              ))}
             </div>
-          </div>
+        </section>
+
+        <section id="objetivos" class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-blue-900 font-montserrat mb-3">O Ciclo de Governança Adaptativa</h2>
+                    <p class="text-lg text-gray-600 max-w-3xl mx-auto">O projeto se estrutura em quatro objetivos estratégicos interdependentes, formando um ciclo de aprendizagem e ação contínua. Clique em cada objetivo para explorar como ele contribui para a transformação sustentável do território.</p>
+                </div>
+                <div class="max-w-4xl mx-auto">
+                    <div class="flex flex-col md:flex-row rounded-lg overflow-hidden shadow-xl">
+                        <div class="w-full md:w-1/3 bg-gray-50 p-4">
+                            <nav id="objetivos-nav" class="flex md:flex-col space-x-2 md:space-x-0 md:space-y-2">
+                                <button data-target="objetivo-1" class="objetivo-tab flex-1 md:flex-none text-left p-4 rounded-md transition-all duration-300 flex items-center space-x-3 bg-teal-600 text-white shadow-md">
+                                    <span class="text-2xl">🏛️</span>
+                                    <span class="font-semibold font-montserrat">CoLaboratório</span>
+                                </button>
+                                <button data-target="objetivo-2" class="objetivo-tab flex-1 md:flex-none text-left p-4 rounded-md transition-all duration-300 flex items-center space-x-3 hover:bg-gray-200">
+                                    <span class="text-2xl">📊</span>
+                                    <span class="font-semibold font-montserrat">Monitoramento</span>
+                                </button>
+                                <button data-target="objetivo-3" class="objetivo-tab flex-1 md:flex-none text-left p-4 rounded-md transition-all duration-300 flex items-center space-x-3 hover:bg-gray-200">
+                                    <span class="text-2xl">👥</span>
+                                    <span class="font-semibold font-montserrat">Capacitação</span>
+                                </button>
+                                <button data-target="objetivo-4" class="objetivo-tab flex-1 md:flex-none text-left p-4 rounded-md transition-all duration-300 flex items-center space-x-3 hover:bg-gray-200">
+                                    <span class="text-2xl">💡</span>
+                                    <span class="font-semibold font-montserrat">Inovações</span>
+                                </button>
+                            </nav>
+                        </div>
+                        <div class="w-full md:w-2/3 p-8">
+                            <div id="objetivo-1" class="objetivo-content">
+                                <h3 class="text-2xl font-bold text-blue-900 font-montserrat mb-4">I: Instituir CoLaboratório de Territórios Saudáveis</h3>
+                                <p class="text-gray-700 leading-relaxed">O CoLaboratório-Sinop será uma inovação em governança pública: um espaço permanente, multissetorial e participativo para diálogo, planejamento integrado e monitoramento conjunto. Funcionará como um centro de inteligência cooperativa local, ativando redes, facilitando pactuações e construindo soluções coletivas para os desafios do território.</p>
+                            </div>
+                            <div id="objetivo-2" class="objetivo-content hidden">
+                                <h3 class="text-2xl font-bold text-blue-900 font-montserrat mb-4">II: Desenvolver Sistema de Monitoramento Participativo</h3>
+                                <p class="text-gray-700 leading-relaxed">Para tomar decisões informadas, o CoLaboratório será alimentado por um sistema de monitoramento que integra dados secundários (oficiais) com dados primários (coletados pelas comunidades). Serão gerados mapas de risco, boletins e painéis de indicadores (dashboards) para orientar ações, utilizando ferramentas como a cartografia social para capturar a percepção popular.</p>
+                            </div>
+                            <div id="objetivo-3" class="objetivo-content hidden">
+                                <h3 class="text-2xl font-bold text-blue-900 font-montserrat mb-4">III: Desenvolver Programas de Capacitação e Mobilização</h3>
+                                <p class="text-gray-700 leading-relaxed">A transformação social requer atores qualificados e mobilizados. Serão oferecidos programas de capacitação para atores comunitários, profissionais do setor público e estudantes. Os módulos formativos visam construir uma compreensão crítica dos determinantes da saúde e instrumentalizar os atores para a ação política e social, fortalecendo as capacidades locais.</p>
+                            </div>
+                            <div id="objetivo-4" class="objetivo-content hidden">
+                                <h3 class="text-2xl font-bold text-blue-900 font-montserrat mb-4">IV: Desenvolvimento de Inovações Sociotécnicas</h3>
+                                <p class="text-gray-700 leading-relaxed">O ciclo se completa com a ação transformadora. As demandas identificadas pelo monitoramento e priorizadas no CoLaboratório darão origem a inovações sociotécnicas. As soluções serão desenvolvidas de forma colaborativa e, as mais promissoras, incubadas e aceleradas, garantindo sua sustentabilidade e transferência para a comunidade ou poder público.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="estrutura" class="py-16 md:py-24">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-blue-900 font-montserrat mb-3">Estrutura de Governança e Parceria</h2>
+                    <p class="text-lg text-gray-600 max-w-3xl mx-auto">Esta seção ilustra como o projeto será gerenciado e como as instituições parceiras colaborarão. A governança é projetada para ser ágil e eficaz, garantindo o alinhamento estratégico e a execução no território.</p>
+                </div>
+                <div class="grid lg:grid-cols-2 gap-10 items-center">
+                    <div class="bg-white p-8 rounded-lg shadow-lg">
+                        <h3 class="text-xl font-bold text-teal-700 font-montserrat mb-6 text-center">Modelo de Governança</h3>
+                        <div class="space-y-4">
+                            <div class="bg-blue-100 border-l-4 border-blue-500 p-4 rounded-r-lg">
+                                <h4 class="font-bold font-montserrat text-blue-900">Comitê Gestor Interinstitucional</h4>
+                                <p class="text-sm text-gray-700">Responsabilidade macro: planejamento estratégico, supervisão e articulação entre Fiocruz, UFMT e UNEMAT.</p>
+                            </div>
+                            <div class="flex justify-center">
+                               <span class="text-2xl text-blue-500">⬇️</span>
+                            </div>
+                            <div class="bg-teal-100 border-l-4 border-teal-500 p-4 rounded-r-lg">
+                                <h4 class="font-bold font-montserrat text-teal-900">Coordenação Executiva</h4>
+                                <p class="text-sm text-gray-700">Responsável pela condução cotidiana do projeto, atuando como elo entre o planejamento estratégico e a execução.</p>
+                            </div>
+                             <div class="flex justify-center">
+                               <span class="text-2xl text-teal-500">⬇️</span>
+                            </div>
+                             <div class="bg-gray-100 border-l-4 border-gray-500 p-4 rounded-r-lg">
+                                <h4 class="font-bold font-montserrat text-gray-900">Equipes de Campo e CoLaboratório</h4>
+                                <p class="text-sm text-gray-700">Execução das atividades no território, pesquisa, capacitação e inovação.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-6">
+                         <h3 class="text-xl font-bold text-teal-700 font-montserrat mb-6 text-center">Papel dos Parceiros</h3>
+                        <div class="bg-white p-6 rounded-lg shadow-md">
+                            <h4 class="font-bold text-blue-900 mb-2">Fiocruz</h4>
+                            <p class="text-sm text-gray-600">Aporta expertise em saúde pública, epidemiologia, metodologias participativas e inteligência cooperativa.</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-md">
+                            <h4 class="font-bold text-blue-900 mb-2">UFMT e UNEMAT</h4>
+                            <p class="text-sm text-gray-600">Aportam conhecimento da realidade local e regional, capilaridade no território e competências de pesquisa em áreas cruciais.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="impacto" class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-blue-900 font-montserrat mb-3">Impactos e Monitoramento</h2>
+                     <p class="text-lg text-gray-600 max-w-3xl mx-auto">O sucesso do projeto será medido pela transformação real no território. Esta seção apresenta os resultados que esperamos alcançar e o sistema de indicadores que usaremos para monitorar nosso progresso.</p>
+                </div>
+                <div class="grid lg:grid-cols-5 gap-8">
+                    <div class="lg:col-span-3 bg-gray-50 p-6 rounded-lg shadow-inner">
+                        <h3 class="text-xl font-bold text-teal-700 font-montserrat mb-4 text-center">Indicadores de Acompanhamento</h3>
+                        <div class="chart-container">
+                            <canvas id="impactChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-2 space-y-4">
+                        <h3 class="text-xl font-bold text-teal-700 font-montserrat mb-4 text-center">Principais Impactos Esperados</h3>
+                        <div class="bg-white p-4 rounded-lg shadow-md flex items-center space-x-4">
+                            <span class="text-3xl">❤️</span>
+                            <p class="text-gray-700">Melhoria dos indicadores de saúde e das condições de vida da população.</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow-md flex items-center space-x-4">
+                            <span class="text-3xl">🌱</span>
+                            <p class="text-gray-700">Aumento da segurança alimentar e nutricional com fomento à agroecologia.</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow-md flex items-center space-x-4">
+                            <span class="text-3xl">🤝</span>
+                            <p class="text-gray-700">Fortalecimento da governança local, do controle social e da economia solidária.</p>
+                        </div>
+                         <div class="bg-white p-4 rounded-lg shadow-md flex items-center space-x-4">
+                            <span class="text-3xl">🎓</span>
+                            <p class="text-gray-700">Qualificação dos serviços públicos a partir de uma visão intersetorial da saúde.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-blue-900 text-white">
+        <div class="container mx-auto px-6 py-8 text-center">
+            <h3 class="text-2xl font-bold font-montserrat mb-4">PICAPS</h3>
+            <p class="mb-6">Uma parceria para o desenvolvimento de Territórios Saudáveis, Sustentáveis e Solidários.</p>
+            <div class="flex justify-center items-center space-x-8">
+                <p class="font-semibold">Fiocruz</p>
+                <p class="font-semibold">UFMT</p>
+                <p class="font-semibold">UNEMAT</p>
+            </div>
         </div>
-        
+    </footer>
 
-        <div className="bg-white rounded-xl shadow-md p-6">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">Instructions</h3>
-          <ul className="list-disc pl-5 space-y-2 text-gray-700">
-            <li>Click on an available seat to select it</li>
-            <li>Choose your preferred date and time for the reservation</li>
-            <li>Confirm your reservation to complete the booking</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  );
-};
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
 
-// Reservation Confirmation Screen 
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
 
-Component
-const ReservationConfirmationScreen = ({ 
-  space, 
-  seat, 
-  date, 
-  time, 
-  onDateChange, 
-  onTimeChange, 
-  onSubmit, 
-  onNavigate 
-}) => {
-  return (
-    <div className="min-h-screen bg-gray-100 py-8 px-4">
-      <div className="max-w-4xl mx-auto">
-        <div className="flex justify-between items-center mb-6">
-          <button
-            onClick={() => onNavigate('floor-plan')}
-            className="flex items-center text-
+            document.querySelectorAll('#mobile-menu a').forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenu.classList.add('hidden');
+                });
+            });
 
-blue-600 hover:text-blue-800"
-          >
-            <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-            </svg>
-            Back
-          </button>
-          <h1 className="text-2xl font-bold text-gray-800">Confirm Your Reservation</h1>
-          <button
-            onClick={() => onNavigate('home')}
-            className="text-blue-600 hover:text-blue-800"
-          >
-            Logout
+            const objetivoTabs = document.querySelectorAll('.objetivo-tab');
+            const objetivoContents = document.querySelectorAll('.objetivo-content');
 
-          </button>
-        </div>
-        
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="bg-white rounded-xl shadow-md p-6">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">Reservation Details</h2>
+            objetivoTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const target = tab.dataset.target;
+                    
+                    objetivoContents.forEach(content => {
+                        content.classList.add('hidden');
+                    });
+                    document.getElementById(target).classList.remove('hidden');
+
+                    objetivoTabs.forEach(t => {
+                        t.classList.remove('bg-teal-600', 'text-white', 'shadow-md');
+                        t.classList.add('hover:bg-gray-200');
+                    });
+                    tab.classList.add('bg-teal-600', 'text-white', 'shadow-md');
+                    tab.classList.remove('hover:bg-gray-200');
+                });
+            });
+
+            const sections = document.querySelectorAll('section');
+            const navLinks = document.querySelectorAll('header nav a');
             
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Space</label>
-                <div className="bg-gray-50 border border-gray-300 rounded-lg p-3">
-                  {space.name}
-                </div>
-              </div>
+            function changeNav() {
+                let index = sections.length;
+                while(--index && window.scrollY + 100 < sections[index].offsetTop) {}
+                
+                navLinks.forEach((link) => link.classList.remove('nav-link-active'));
+                const activeLink = document.querySelector(`header nav a[href="#${sections[index].id}"]`);
+                if(activeLink) {
+                    activeLink.classList.add('nav-link-active');
+                }
+            }
 
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Seat</label>
-                <div className="bg-gray-50 border border-gray-300 rounded-lg p-3">
-                  {seat.id} - {seat.type === 'desk' ? 'Desk' : 
-                     seat.type === 'meetingRoom' ? 'Meeting Room' : 
-                     seat.type === 'privateOffice' ? 'Private Office' : 'Creative Studio'}
-                </div>
-              </div>
-              
-              <div>
-                <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-1">Date</label>
-                <input
+            changeNav();
+            window.addEventListener('scroll', changeNav);
 
-                  type="date"
-                  id="date"
-                  value={date}
-                  onChange={(e) => onDateChange(e.target.value)}
-                  required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                />
-              </div>
-              
-              <div>
-                <label htmlFor="time" className="block text-sm font-medium text-gray-700 mb-1">Time</label>
-                <input
-                  type="time"
-                  id="time"
-                  value={time}
-
-                  onChange={(e) => onTimeChange(e.target.value)}
-                  required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                />
-              </div>
-            </div>
-            
-            <button
-              onClick={onSubmit}
-              className="mt-6 w-full py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              Confirm Reservation
-            </button>
-          </div>
-          
-
-          <div className="bg-white rounded-xl shadow-md p-6">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">Your Selection</h3>
-            
-            <div className="bg-gray-100 rounded-lg p-4 mb-4">
-              <div className="flex items-center">
-                <div className="w-16 h-16 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
-                  <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 
-
-00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                  </svg>
-                </div>
-                <div>
-                  <h4 className="font-medium text-gray-800">{space.name}</h4>
-                  <p className="text-sm text-gray-600">{seat.id} - {seat.type === 'desk' ? 'Desk' : 
-                     seat.type === 'meetingRoom' ? 'Meeting Room' : 
-                     seat.type === 'privateOffice' ? 'Private Office' : 'Creative Studio'}</p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="bg-gray-100 rounded-lg p-4">
-              <h4 className="font-medium text-
-
-gray-800 mb-2">Reservation Summary</h4>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Date:</span>
-                  <span className="font-medium">{date || 'Not selected'}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Time:</span>
-                  <span className="font-medium">{time || 'Not selected'}</span>
-                </div>
-                <div className="flex justify-between pt-2 border-t">
-                  <span className="text-
-
-gray-600">Status:</span>
-                  <span className="font-medium text-green-600">Pending Confirmation</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// Settings Screen Component (Optional)
-const SettingsScreen = ({ user, onNavigate }) => {
-  return (
-    <div className="min-h-screen bg-gray-100 py-8 px-4">
-      <div className="max-w-4xl mx-auto">
-
-        <div className="flex justify-between items-center mb-6">
-          <button
-            onClick={() => onNavigate('space-selection')}
-            className="flex items-center text-blue-600 hover:text-blue-800"
-          >
-            <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-            </svg>
-            Back
-          </button>
-          <h1 className="text-2xl font-bold text-gray-800">Settings</h1>
-          <button
-
-            onClick={() => onNavigate('home')}
-            className="text-blue-600 hover:text-blue-800"
-          >
-            Logout
-          </button>
-        </div>
-        
-        <div className="bg-white rounded-xl shadow-md p-6">
-          <h2 className="text-xl font-semibold text-gray-800 mb-6">Account Settings</h2>
-          
-          <div className="mb-6">
-            <h3 className="text-lg font-medium text-gray-800 mb-4">Profile Information</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-
-                <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-                <div className="bg-gray-50 border border-gray-300 rounded-lg p-3">
-                  {user?.name || 'John Doe'}
-                </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
-                <div className="bg-gray-50 border border-gray-300 rounded-lg p-3">
-                  {user?.email || 'john@example.com'}
-                </div>
-              </div>
-            </div>
-          </div>
-          
-
-          <div className="mb-6">
-            <h3 className="text-lg font-medium text-gray-800 mb-4">Preferences</h3>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-gray-700">Receive Notifications</span>
-                <div className="relative inline-block w-12 h-6 transition duration-200 ease-in-out">
-                  <input
-                    type="checkbox"
-                    id="notifications"
-                    className="absolute w-6 h-6 opacity-0 z-10 cursor-pointer"
-                  />
-                  <label
-                    htmlFor="notifications"
-                    className="toggle-label block 
-
-overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"
-                  >
-                    <span className="absolute left-0 top-0 bottom-0 w-6 rounded-full bg-white shadow transform transition-transform duration-300 ease-in-out"></span>
-                  </label>
-                </div>
-              </div>
-              
-              <div className="flex items-center justify-between">
-                <span className="text-gray-700">Dark Mode</span>
-                <div className="relative inline-block w-12 h-6 transition duration-200 ease-in-out">
-                  <input
-                    type="checkbox"
-
-                    id="darkMode"
-                    className="absolute w-6 h-6 opacity-0 z-10 cursor-pointer"
-                  />
-                  <label
-                    htmlFor="darkMode"
-                    className="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"
-                  >
-                    <span className="absolute left-0 top-0 bottom-0 w-6 rounded-full bg-white shadow transform transition-transform duration-300 ease-in-out"></span>
-                  </label>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-
-          <div className="mb-6">
-            <h3 className="text-lg font-medium text-gray-800 mb-4">Security</h3>
-            <div>
-              <button className="text-blue-600 hover:text-blue-800">
-                Change Password
-              </button>
-            </div>
-          </div>
-          
-          <div className="mt-8">
-            <button className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
-              Delete Account
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-  );
-};
-
-export default App;
-```
+            const ctx = document.getElementById('impactChart').getContext('2d');
+            const impactChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Reuniões Realizadas', 'Publicações', 'Pessoas Capacitadas', 'Inovações Desenvolvidas', 'Políticas Influenciadas'],
+                    datasets: [{
+                        label: 'Indicadores de Processo',
+                        data: [45, 12, 0, 0, 0],
+                        backgroundColor: 'rgba(13, 148, 136, 0.7)',
+                        borderColor: 'rgba(13, 148, 136, 1)',
+                        borderWidth: 1
+                    }, {
+                        label: 'Indicadores de Resultado',
+                        data: [0, 0, 250, 8, 3],
+                        backgroundColor: 'rgba(30, 64, 175, 0.7)',
+                        borderColor: 'rgba(30, 64, 175, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
+                        },
+                        x: {
+                             grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            enabled: true
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
